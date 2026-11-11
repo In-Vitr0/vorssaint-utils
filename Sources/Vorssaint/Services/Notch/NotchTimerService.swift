@@ -86,6 +86,7 @@ final class NotchTimerService: ObservableObject {
             detail: text.phase(session.phase), symbol: "timer", mascot: reaction))
         // It takes the news in the notice, or where it is when the notice cannot show.
         NotchService.shared.reactMascot(reaction)
+        NotchMouseHaptics.signal(.timerFinished)
         alert.start(enabled: NotchTimerSupport.isSoundEnabled())
     }
 

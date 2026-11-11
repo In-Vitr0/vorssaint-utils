@@ -2021,8 +2021,11 @@ final class NotchService: ObservableObject {
         pageLayers[module] = close
     }
 
-    func provideHapticFeedback() {
-        guard acceptsUserInteraction, panel?.isVisible == true, NotchSupport.usesHapticFeedback() else { return }
+    func provideHapticFeedback(_ mouse: NotchMouseHaptics.Event = .navigate) {
+        guard acceptsUserInteraction, panel?.isVisible == true else { return }
+        // A haptic mouse hears it whether or not trackpad feedback is on.
+        NotchMouseHaptics.signal(mouse)
+        guard NotchSupport.usesHapticFeedback() else { return }
         NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .default)
     }
 
@@ -4311,6 +4314,7 @@ final class NotchService: ObservableObject {
                 guard let self else { return }
                 let shown = self.show(NotchNotice(event: .systemNotification, title: item.content.title,
                                                  detail: item.content.body, symbol: "bell.fill", notification: item.content, notificationID: item.id))
+                if shown { NotchMouseHaptics.signal(.notification) }
                 if shown, !self.expanded, self.captureControls == nil, !self.dragPlaceholder {
                     NotchNotificationService.shared.hideNative(item.id)
                 }

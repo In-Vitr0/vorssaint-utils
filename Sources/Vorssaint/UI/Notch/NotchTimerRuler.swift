@@ -44,7 +44,7 @@ struct NotchTimerRuler: NSViewRepresentable {
         @objc func changed(_ sender: NSSlider) {
             guard parent.minutes != sender.integerValue else { return }
             parent.minutes = sender.integerValue
-            NotchService.shared.provideHapticFeedback()
+            NotchService.shared.provideHapticFeedback(.timerTick)
         }
     }
 }
