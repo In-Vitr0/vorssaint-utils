@@ -213,6 +213,20 @@ enum NotchActivityTests {
         let suspendedSounds = sounds
         settle()
         suite.expect(sounds == suspendedSounds, "suspension cancels sound playback")
+
+        var taps = 0
+        var hapticSounds = 0
+        let haptic = NotchTimerAlert(interval: .milliseconds(5), sound: { hapticSounds += 1 }, stopSound: {},
+                                     haptic: { taps += 1 })
+        defer { haptic.stop() }
+        haptic.start(enabled: false)
+        suite.expect(taps == 1 && hapticSounds == 0, "a finished timer taps a haptic mouse at once, even with sound off")
+        wait { taps >= 3 }
+        suite.expect(taps >= 3 && hapticSounds == 0, "the haptic keeps tapping until the timer is dismissed")
+        haptic.stop()
+        let dismissedTaps = taps
+        settle()
+        suite.expect(taps == dismissedTaps, "dismissing the timer stops the haptic")
         alert.start(enabled: true)
         elapsed = .seconds(301)
         let expirationStops = stops
